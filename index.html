@@ -1,0 +1,1366 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CardioArcade · 3º ESO</title>
+  <style>
+    :root{
+      --bg:#070814;
+      --panel:#0d1030;
+      --panel2:#0b0d22;
+      --text:#e9ecff;
+      --muted:#aab0e6;
+      --accent:#5ef2d2;
+      --accent2:#ff4fd8;
+      --warn:#ffcf5a;
+      --bad:#ff5b6b;
+      --good:#65ff8a;
+      --border:rgba(255,255,255,.12);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      --dys: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background:
+        radial-gradient(1200px 600px at 10% 0%, rgba(94,242,210,.20), transparent 55%),
+        radial-gradient(900px 500px at 90% 20%, rgba(255,79,216,.18), transparent 55%),
+        radial-gradient(700px 400px at 50% 100%, rgba(255,207,90,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg), #050611 60%, #04040c);
+      color:var(--text);
+      min-height:100vh;
+    }
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    header{
+      display:flex;gap:14px;align-items:center;justify-content:space-between;
+      padding:18px 18px;border:1px solid var(--border);border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow:var(--shadow);
+      position:sticky;top:14px;z-index:20;
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: conic-gradient(from 210deg, var(--accent), var(--accent2), var(--warn), var(--accent));
+      box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 10px 25px rgba(0,0,0,.45);
+      display:grid;place-items:center;
+      font-family: var(--mono); font-weight:900;
+      color:#071024;
+    }
+    .brand h1{font-size:16px;margin:0;line-height:1.05}
+    .brand p{margin:0;color:var(--muted);font-size:12px}
+    nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      font-weight:700;
+    }
+    .btn:hover{background:rgba(255,255,255,.08);transform:translateY(-1px)}
+    .btn.active{border-color:rgba(94,242,210,.55); background:rgba(94,242,210,.12)}
+    .btn.badge::after{
+      content: attr(data-badge);
+      margin-left:8px;
+      font-size:11px;
+      padding:3px 8px;border-radius:999px;
+      background:rgba(255,79,216,.18);
+      border:1px solid rgba(255,79,216,.35);
+      color:var(--text);
+      font-weight:800;
+    }
+
+    .grid{display:grid;grid-template-columns: 1.1fr .9fr; gap:18px; margin-top:18px}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr} header{position:static}}
+    .card{
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,0));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .card .hd h2{margin:0;font-size:14px}
+    .card .bd{padding:16px}
+    .muted{color:var(--muted)}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      font-size:12px; color:var(--muted);
+      user-select:none;
+    }
+    .pill b{color:var(--text)}
+    .tiles{display:grid;grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width: 650px){.tiles{grid-template-columns:1fr}}
+    .tile{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.15);
+      border-radius:18px;
+      padding:14px 14px;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    .tile:hover{transform:translateY(-1px); background:rgba(0,0,0,.22); border-color:rgba(94,242,210,.35)}
+    .tile h3{margin:0 0 6px 0;font-size:14px}
+    .tile p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
+    .tile .tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .tag{
+      font-size:11px;
+      padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-weight:800;
+    }
+    .tag.good{border-color:rgba(101,255,138,.35); background:rgba(101,255,138,.08); color:#c8ffe0}
+    .tag.warn{border-color:rgba(255,207,90,.35); background:rgba(255,207,90,.08); color:#ffe9bf}
+    .tag.hot{border-color:rgba(255,79,216,.35); background:rgba(255,79,216,.08); color:#ffd6f5}
+
+    .stage{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      background: radial-gradient(900px 360px at 50% 0%, rgba(94,242,210,.10), transparent 60%),
+                  radial-gradient(700px 320px at 80% 70%, rgba(255,79,216,.10), transparent 60%),
+                  rgba(0,0,0,.22);
+      overflow:hidden;
+      padding:12px;
+    }
+    canvas{width:100%;height:auto;display:block;border-radius:14px;background:#060718}
+    .hud{
+      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .hud .pill{background:rgba(0,0,0,.28)}
+    .controls{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px
+    }
+    .small{font-size:12px;color:var(--muted);line-height:1.35}
+    .kbd{font-family:var(--mono);font-weight:900;color:var(--text);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.10)}
+    .sep{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
+
+    .modalBack{
+      position:fixed; inset:0; background:rgba(0,0,0,.62);
+      display:none; align-items:center; justify-content:center; padding:18px; z-index:50;
+      backdrop-filter: blur(6px);
+    }
+    .modal{
+      width:min(820px, 100%);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(13,16,48,.92), rgba(8,9,28,.92));
+      box-shadow: 0 18px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modal .mhd{
+      padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .modal .mhd h3{margin:0;font-size:14px}
+    .modal .mbd{padding:16px}
+    .answers{display:grid;grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width:650px){.answers{grid-template-columns:1fr}}
+    .ans{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      border-radius:16px;
+      padding:12px 12px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      font-weight:800;
+    }
+    .ans:hover{transform:translateY(-1px);background:rgba(0,0,0,.24);border-color:rgba(94,242,210,.35)}
+    .ans.good{border-color:rgba(101,255,138,.50); background:rgba(101,255,138,.10)}
+    .ans.bad{border-color:rgba(255,91,107,.50); background:rgba(255,91,107,.10)}
+    .note{
+      padding:10px 12px;border-radius:16px;border:1px dashed rgba(255,255,255,.18);
+      color:var(--muted); background:rgba(255,255,255,.03);font-size:12px; line-height:1.45;
+    }
+
+    .learn h3{margin:0 0 6px 0;font-size:14px}
+    .learn ul{margin:8px 0 0 18px;color:var(--muted);line-height:1.5}
+    .learn li{margin:6px 0}
+    .callout{
+      padding:12px 12px;border-radius:18px;border:1px solid rgba(255,207,90,.25);
+      background:rgba(255,207,90,.08);
+      color:#ffe9bf;
+      font-size:12px;line-height:1.45;
+    }
+
+    textarea{
+      width:100%; min-height:120px; resize:vertical;
+      border-radius:16px; border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.20); color:var(--text);
+      padding:12px; font-family: var(--mono); font-size:12px;
+    }
+
+    body.dyslexia{
+      font-family: var(--dys);
+      letter-spacing: .2px;
+      line-height: 1.35;
+    }
+    body.dyslexia .tile p, body.dyslexia .small, body.dyslexia .note, body.dyslexia .muted{
+      font-size: 13px;
+    }
+    .footer{
+      margin-top:18px;
+      padding:14px 16px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      background:rgba(0,0,0,.15);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">♥</div>
+        <div>
+          <h1>CardioArcade · Aparato cardiovascular</h1>
+          <p>3º ESO · Aprende jugando: arterias, corazón, ciclo cardíaco, circulación y factores de riesgo.</p>
+        </div>
+      </div>
+      <nav aria-label="Secciones">
+        <button class="btn active" id="tabArcade">Arcade</button>
+        <button class="btn" id="tabAprende">Aprende</button>
+        <button class="btn badge" data-badge="Profe" id="tabProfe">Modo profe</button>
+        <button class="btn" id="tabAjustes">Ajustes</button>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section class="card" id="leftCard">
+        <div class="hd">
+          <h2 id="viewTitle">Hub Arcade: elige un reto</h2>
+          <span class="pill"><b id="playerName">Jugador/a:</b>&nbsp;<span id="playerNameValue">Anónimo</span></span>
+        </div>
+        <div class="bd" id="leftBody"></div>
+      </section>
+
+      <aside class="card">
+        <div class="hd">
+          <h2>Objetivos de aprendizaje (en lenguaje “de clase”)</h2>
+          <span class="pill"><b>Murcia</b>&nbsp;|&nbsp;<span class="muted">ejemplos locales</span></span>
+        </div>
+        <div class="bd learn" id="rightBody">
+          <div class="callout">
+            💡 <b>Idea clave:</b> el aparato cardiovascular es como una <b>red de carreteras</b> (vasos sanguíneos) con una
+            <b>central de bombeo</b> (corazón). Si hay atascos (placas de ateroma) o la presión va muy alta (hipertensión),
+            el sistema sufre.
+          </div>
+          <div class="sep"></div>
+          <h3>Lo que vas a practicar</h3>
+          <ul>
+            <li><b>Partes del corazón</b>: aurículas, ventrículos, válvulas y vasos principales.</li>
+            <li><b>Tipos de circulación</b>: pulmonar (pequeña) y sistémica (mayor) + circulación coronaria.</li>
+            <li><b>Ciclo cardíaco</b>: sístole y diástole (qué se contrae y cuándo se llenan las cavidades).</li>
+            <li><b>Factores de riesgo</b>: hipertensión, tabaco, sedentarismo, dieta, estrés y sueño.</li>
+            <li><b>Aplicación a la vida real</b>: cómo hábitos típicos (deporte, dieta mediterránea, “picoteo”, etc.) cambian el riesgo.</li>
+          </ul>
+          <div class="sep"></div>
+          <div class="note">
+            🏟️ Ejemplo “Lorca/Murcia”: entrenar fútbol o baloncesto ayuda a que el corazón sea más eficiente
+            (baja la frecuencia en reposo) y mejora el control de la presión arterial. Y la <b>dieta mediterránea</b>
+            (aceite de oliva, fruta, verdura, legumbres) suele ser aliada del sistema cardiovascular.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer" id="footerText">
+      Funciona sin internet. Guarda tus resultados en este navegador. Si usas móviles/tablets, los controles tienen botones táctiles.
+      <br><b>Consejo didáctico:</b> úsalo como “estación” en clase (10–12 min por juego) y termina con una puesta en común.
+    </div>
+  </div>
+
+  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="qTitle">
+    <div class="modal">
+      <div class="mhd">
+        <h3 id="qTitle">Pregunta</h3>
+        <button class="btn" id="closeModal">Cerrar</button>
+      </div>
+      <div class="mbd">
+        <div class="pill"><b>Tiempo:</b>&nbsp;<span id="qTime">15</span>s</div>
+        <div class="sep"></div>
+        <p id="qText" style="margin-top:0"></p>
+        <div class="answers" id="qAnswers"></div>
+        <div class="sep"></div>
+        <div class="note" id="qExplain">Explicación.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const QUESTION_BANK = {
+  aterosclerosis: [
+    { q:"Una placa de ateroma (aterosclerosis) se forma sobre todo por…",
+      a:["Acumulación de grasa y células inflamatorias en la pared de la arteria","Acumulación de aire dentro de la arteria","Rotura de un hueso cercano que tapa el vaso","Exceso de agua dentro de la sangre"],
+      correct:0, explain:"La aterosclerosis es un proceso inflamatorio: se acumulan lípidos (colesterol LDL), células y tejido fibroso en la pared arterial, estrechando el vaso." },
+    { q:"¿Por qué una arteria obstruida puede causar un infarto?",
+      a:["Porque aumenta el oxígeno","Porque reduce el riego sanguíneo y el oxígeno al tejido","Porque baja la glucosa a cero","Porque convierte arterias en venas"],
+      correct:1, explain:"Si el tejido no recibe oxígeno suficiente (isquemia), las células pueden morir. En el corazón, eso es un infarto de miocardio." },
+    { q:"¿Qué lipoproteína se asocia más a riesgo de placas?",
+      a:["HDL","LDL","Quilomicrones","Hemoglobina"],
+      correct:1, explain:"El LDL se asocia a depósito de colesterol en la pared arterial. El HDL suele ayudar a retirar colesterol (efecto protector)." },
+    { q:"El tabaco aumenta el riesgo cardiovascular principalmente porque…",
+      a:["Mejora la elasticidad de las arterias","Daña el endotelio, favorece inflamación y trombos","Baja la presión arterial siempre","Aumenta el número de glóbulos rojos sin problemas"],
+      correct:1, explain:"El humo daña el endotelio (capa interna del vaso), aumenta inflamación y facilita trombos: más riesgo de infarto e ictus." }
+  ],
+  corazon: [
+    { q:"¿Qué cavidad del corazón impulsa la sangre hacia los pulmones?",
+      a:["Aurícula izquierda","Ventrículo derecho","Aurícula derecha","Ventrículo izquierdo"],
+      correct:1, explain:"El ventrículo derecho envía sangre a la arteria pulmonar rumbo a los pulmones." },
+    { q:"La válvula mitral (bicúspide) está entre…",
+      a:["Aurícula derecha y ventrículo derecho","Ventrículo derecho y arteria pulmonar","Aurícula izquierda y ventrículo izquierdo","Ventrículo izquierdo y aorta"],
+      correct:2, explain:"Mitral/bicúspide: entre aurícula izquierda y ventrículo izquierdo." },
+    { q:"¿Cuál es la función principal de las válvulas del corazón?",
+      a:["Parar el corazón cuando hay estrés","Evitar que la sangre retroceda (flujo en un solo sentido)","Mezclar sangre con aire","Aumentar el número de capilares"],
+      correct:1, explain:"Las válvulas aseguran flujo unidireccional: se abren con la presión y se cierran para evitar reflujo." },
+    { q:"Las arterias coronarias sirven para…",
+      a:["Llevar sangre al cerebro","Nutrir el propio músculo cardíaco (miocardio)","Unir aurículas con ventrículos","Transformar venas en arterias"],
+      correct:1, explain:"El corazón también necesita oxígeno: las coronarias irrigan el miocardio." }
+  ],
+  ciclo: [
+    { q:"Durante la diástole ventricular…",
+      a:["Los ventrículos se contraen y expulsan sangre","Los ventrículos se relajan y se llenan de sangre","Las válvulas siempre están cerradas","La sangre deja de moverse"],
+      correct:1, explain:"Diástole ventricular = relajación y llenado ventricular (entra sangre desde las aurículas)." },
+    { q:"¿Qué ocurre en la sístole ventricular?",
+      a:["Se llenan los ventrículos desde las venas","Se contraen los ventrículos y expulsan sangre a aorta y arteria pulmonar","Se cierran las válvulas semilunares para llenar aurículas","Se abren las válvulas auriculoventriculares para que retroceda sangre"],
+      correct:1, explain:"Sístole ventricular = contracción y eyección: sangre sale hacia grandes arterias." },
+    { q:"Si la presión arterial está alta mucho tiempo, ¿qué puede pasar?",
+      a:["Nada, porque la sangre es “fuerte”","Las arterias se dañan y el corazón trabaja más (hipertrofia)","Las venas se convierten en capilares","El oxígeno desaparece"],
+      correct:1, explain:"La hipertensión crónica daña vasos y obliga al corazón a bombear contra más resistencia: aumenta el esfuerzo." }
+  ],
+  circulacion: [
+    { q:"La circulación pulmonar (pequeña) va desde…",
+      a:["Ventrículo izquierdo → cuerpo → aurícula derecha","Ventrículo derecho → pulmones → aurícula izquierda","Aurícula izquierda → pulmones → ventrículo izquierdo","Aorta → venas cavas → pulmones"],
+      correct:1, explain:"Sale del ventrículo derecho por la arteria pulmonar, se oxigena en pulmones y vuelve a la aurícula izquierda." },
+    { q:"La circulación sistémica (mayor) lleva sangre oxigenada a…",
+      a:["Pulmones","Solo al corazón","Todo el cuerpo (tejidos)","Solo al hígado"],
+      correct:2, explain:"La circulación mayor reparte oxígeno y nutrientes a los tejidos del cuerpo y recoge CO₂ y desechos." },
+    { q:"En general, ¿qué vaso lleva sangre desde el corazón hacia fuera?",
+      a:["Vena","Capilar","Arteria","Alvéolo"],
+      correct:2, explain:"Arteria = sale del corazón. Vena = vuelve al corazón. (Ojo: la arteria pulmonar lleva sangre poco oxigenada)." }
+  ],
+  habitos: [
+    { q:"¿Cuál es un factor de riesgo MODIFICABLE?",
+      a:["Edad","Genética","Tabaco","Sexo biológico"],
+      correct:2, explain:"Tabaco es modificable (puedes dejarlo). Edad, genética y sexo no los puedes cambiar." },
+    { q:"En un adolescente, una estrategia útil para controlar estrés y ayudar al corazón es…",
+      a:["Dormir menos para estudiar más","Respiración y actividad física regular","Beber más bebidas energéticas","Saltar comidas"],
+      correct:1, explain:"Dormir bien y moverse ayuda a regular hormonas del estrés y a mejorar la salud cardiovascular." }
+  ]
+};
+
+function randomFrom(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function clamp(v,min,max){return Math.max(min, Math.min(max,v))}
+const $ = (sel)=>document.querySelector(sel);
+
+const leftBody = $("#leftBody");
+const viewTitle = $("#viewTitle");
+
+let player = {
+  name: localStorage.getItem("cardioarcade.name") || "Anónimo",
+  totalPoints: Number(localStorage.getItem("cardioarcade.totalPoints") || 0),
+  best: JSON.parse(localStorage.getItem("cardioarcade.best") || "{}"),
+  log: JSON.parse(localStorage.getItem("cardioarcade.log") || "[]")
+};
+$("#playerNameValue").textContent = player.name;
+
+function setTab(activeId){
+  ["tabArcade","tabAprende","tabProfe","tabAjustes"].forEach(id=>{
+    const b = $("#"+id);
+    b.classList.toggle("active", id===activeId);
+  });
+}
+
+$("#tabArcade").addEventListener("click", ()=>renderHub());
+$("#tabAprende").addEventListener("click", ()=>renderLearn());
+$("#tabProfe").addEventListener("click", ()=>renderTeacher());
+$("#tabAjustes").addEventListener("click", ()=>renderSettings());
+
+let qTimer=null, qTimeLeft=0, qResolve=null;
+
+function askQuestion(topic, seconds=15){
+  const qList = QUESTION_BANK[topic] || [];
+  const qObj = randomFrom(qList);
+  if(!qObj){ return Promise.resolve(true); }
+
+  $("#qTitle").textContent = "Pregunta · " + topic.toUpperCase();
+  $("#qText").textContent = qObj.q;
+  $("#qExplain").textContent = "💬 " + qObj.explain;
+
+  const answers = $("#qAnswers");
+  answers.innerHTML = "";
+
+  qTimeLeft = seconds;
+  $("#qTime").textContent = qTimeLeft;
+
+  $("#modalBack").style.display = "flex";
+
+  $("#qExplain").style.opacity = 0;
+  $("#qExplain").style.transform = "translateY(2px)";
+
+  let answered = false;
+
+  function finish(result){
+    if(answered) return;
+    answered = true;
+    clearInterval(qTimer); qTimer=null;
+    setTimeout(()=>{
+      $("#modalBack").style.display = "none";
+      qResolve?.(result);
+      qResolve=null;
+    }, 520);
+  }
+
+  qObj.a.forEach((txt, idx)=>{
+    const btn = document.createElement("button");
+    btn.className = "ans";
+    btn.textContent = txt;
+    btn.addEventListener("click", ()=>{
+      const ok = idx === qObj.correct;
+      btn.classList.add(ok ? "good" : "bad");
+      [...answers.children].forEach((child, j)=>{
+        if(j===qObj.correct) child.classList.add("good");
+      });
+      $("#qExplain").style.opacity = 1;
+      $("#qExplain").style.transform = "translateY(0)";
+      finish(ok);
+    });
+    answers.appendChild(btn);
+  });
+
+  qTimer = setInterval(()=>{
+    qTimeLeft -= 1;
+    $("#qTime").textContent = qTimeLeft;
+    if(qTimeLeft<=0){
+      $("#qExplain").style.opacity = 1;
+      finish(false);
+    }
+  }, 1000);
+
+  return new Promise((resolve)=>{ qResolve=resolve; });
+}
+
+$("#closeModal").addEventListener("click", ()=>{
+  clearInterval(qTimer); qTimer=null;
+  $("#modalBack").style.display = "none";
+  qResolve?.(false); qResolve=null;
+});
+
+let game=null;
+
+function makeCanvasStage(title, subtitle){
+  return `
+    <div class="stage">
+      <canvas id="cv" width="960" height="540" aria-label="Zona de juego"></canvas>
+    </div>
+    <div class="hud">
+      <span class="pill"><b>Juego:</b>&nbsp;${title}</span>
+      <span class="pill"><b>Puntos:</b>&nbsp;<span id="hudPoints">0</span></span>
+      <span class="pill"><b>Vidas:</b>&nbsp;<span id="hudLives">3</span></span>
+      <span class="pill"><b>Tiempo:</b>&nbsp;<span id="hudTime">60</span>s</span>
+    </div>
+    <div class="controls small">
+      <span class="pill">Mover: <span class="kbd">WASD</span> o <span class="kbd">←↑→↓</span></span>
+      <span class="pill">Pausa: <span class="kbd">P</span></span>
+      <span class="pill">Salir: <span class="kbd">Esc</span></span>
+    </div>
+    <div class="sep"></div>
+    <div class="note">${subtitle}</div>
+  `;
+}
+
+function startArteriaRush(){
+  setTab("tabArcade");
+  viewTitle.textContent = "Arteria Rush: desobstruye arterias respondiendo preguntas";
+  leftBody.innerHTML = makeCanvasStage(
+    "Arteria Rush",
+    "🎯 Objetivo: llega a los “coágulos” (⚫). Para romperlos, contesta bien una pregunta. Así conectas ciencia + acción."
+  );
+
+  const cv = $("#cv");
+  const ctx = cv.getContext("2d");
+
+  const W=24, H=14;
+  const cell = cv.width / W;
+  const map = [
+    "111111111111111111111111",
+    "100000000001000000000001",
+    "101111111101011111111101",
+    "101000001001010000001001",
+    "101011101111011101111101",
+    "101010001000010001000101",
+    "101011111011111110111101",
+    "100000000010000000000001",
+    "101111111110111111111101",
+    "101000000000100000000101",
+    "101011111111111111110101",
+    "101000000000000000000101",
+    "101111111111111111111101",
+    "111111111111111111111111"
+  ].map(row => row.split("").map(x=>Number(x)));
+
+  const clots = [
+    {x:20.5,y:2.5, topic:"aterosclerosis", alive:true},
+    {x:12.5,y:6.5, topic:"corazon", alive:true},
+    {x:4.5,y:10.5, topic:"ciclo", alive:true},
+    {x:19.5,y:11.5, topic:"habitos", alive:true},
+    {x:7.5,y:7.5, topic:"circulacion", alive:true},
+  ];
+
+  const playerObj = {x:2.5,y:1.5, r:0.36, lives:3, points:0, time:60, paused:false};
+
+  const keys = {};
+  window.onkeydown = (e)=>{
+    keys[e.key.toLowerCase()] = true;
+    if(e.key === "Escape"){ endGame("Has salido del juego."); }
+    if(e.key.toLowerCase()==="p"){ playerObj.paused = !playerObj.paused; }
+  };
+  window.onkeyup = (e)=>{ keys[e.key.toLowerCase()] = false; };
+
+  function cellIsWall(x,y){
+    const xi=Math.floor(x), yi=Math.floor(y);
+    if(xi<0||yi<0||xi>=W||yi>=H) return true;
+    return map[yi][xi]===1;
+  }
+
+  function collideCircleWalls(nx, ny, r){
+    const pts = [
+      [nx+r, ny],[nx-r, ny],[nx, ny+r],[nx, ny-r],
+      [nx+r*0.7, ny+r*0.7],[nx-r*0.7, ny+r*0.7],[nx+r*0.7, ny-r*0.7],[nx-r*0.7, ny-r*0.7]
+    ];
+    return pts.some(([px,py])=>cellIsWall(px,py));
+  }
+
+  async function checkClots(){
+    for(const c of clots){
+      if(!c.alive) continue;
+      const dist = Math.hypot(playerObj.x-c.x, playerObj.y-c.y);
+      if(dist < 0.65){
+        playerObj.paused = true;
+        const ok = await askQuestion(c.topic, 15);
+        playerObj.paused = false;
+        if(ok){
+          c.alive=false;
+          playerObj.points += 120;
+          ping("✅ Coágulo roto. ¡Riego restaurado!");
+        }else{
+          playerObj.lives -= 1;
+          ping("❌ Fallo: el coágulo sigue. Pierdes 1 vida.");
+          if(playerObj.lives<=0){ endGame("Te has quedado sin vidas."); return; }
+        }
+      }
+    }
+    if(clots.every(c=>!c.alive)) endGame("¡Victoria! Has desobstruido todas las arterias.");
+  }
+
+  let pingText="", pingT=0;
+  function ping(msg){ pingText=msg; pingT=1.9; }
+
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle = "#050616"; ctx.fillRect(0,0,cv.width,cv.height);
+
+    for(let y=0;y<H;y++){
+      for(let x=0;x<W;x++){
+        if(map[y][x]===1){
+          ctx.fillStyle="rgba(255,255,255,.08)";
+          ctx.fillRect(x*cell, y*cell, cell, cell);
+          ctx.strokeStyle="rgba(94,242,210,.10)";
+          ctx.strokeRect(x*cell+0.5, y*cell+0.5, cell-1, cell-1);
+        }
+      }
+    }
+
+    for(const c of clots){
+      if(!c.alive) continue;
+      const cx=c.x*cell, cy=c.y*cell;
+      ctx.beginPath();
+      ctx.fillStyle="rgba(255,91,107,.85)";
+      ctx.arc(cx, cy, cell*0.28, 0, Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle="rgba(255,207,90,.50)";
+      ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+
+      ctx.fillStyle="rgba(255,255,255,.85)";
+      ctx.font=`bold ${Math.floor(cell*0.22)}px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("?", cx, cy);
+    }
+
+    const px=playerObj.x*cell, py=playerObj.y*cell;
+    ctx.beginPath();
+    ctx.fillStyle="rgba(94,242,210,.95)";
+    ctx.arc(px, py, cell*playerObj.r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle="rgba(255,79,216,.45)";
+    ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+
+    if(playerObj.paused){
+      ctx.fillStyle="rgba(0,0,0,.45)";
+      ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.fillStyle="rgba(255,255,255,.9)";
+      ctx.font=`800 30px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("PAUSA", cv.width/2, cv.height/2-12);
+      ctx.font=`600 14px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.fillStyle="rgba(233,236,255,.85)";
+      ctx.fillText("Pulsa P para continuar", cv.width/2, cv.height/2+18);
+    }
+
+    if(pingT>0){
+      ctx.fillStyle="rgba(0,0,0,.35)";
+      ctx.fillRect(0,0,cv.width, 48);
+      ctx.fillStyle="rgba(233,236,255,.95)";
+      ctx.font=`700 14px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.textAlign="left"; ctx.textBaseline="middle";
+      ctx.fillText(pingText, 14, 24);
+    }
+  }
+
+  function step(dt){
+    if(playerObj.paused) return;
+    const sp=3.4;
+    let ax=0, ay=0;
+    if(keys["arrowleft"]||keys["a"]) ax -= 1;
+    if(keys["arrowright"]||keys["d"]) ax += 1;
+    if(keys["arrowup"]||keys["w"]) ay -= 1;
+    if(keys["arrowdown"]||keys["s"]) ay += 1;
+    const len = Math.hypot(ax,ay) || 1;
+    ax/=len; ay/=len;
+
+    const nx = playerObj.x + ax*sp*dt;
+    const ny = playerObj.y + ay*sp*dt;
+
+    if(!collideCircleWalls(nx, playerObj.y, playerObj.r)) playerObj.x = nx;
+    if(!collideCircleWalls(playerObj.x, ny, playerObj.r)) playerObj.y = ny;
+
+    checkClots();
+    if(pingT>0) pingT -= dt;
+
+    playerObj._t = (playerObj._t||0)+dt;
+    if(playerObj._t>=1){
+      playerObj._t=0;
+      playerObj.time -= 1;
+      if(playerObj.time<=0) endGame("Se acabó el tiempo.");
+    }
+
+    $("#hudPoints").textContent = playerObj.points;
+    $("#hudLives").textContent = playerObj.lives;
+    $("#hudTime").textContent = playerObj.time;
+  }
+
+  let last = performance.now();
+  function loop(now){
+    const dt = clamp((now-last)/1000, 0, 0.033);
+    last = now;
+    step(dt);
+    draw();
+    if(game?.running) requestAnimationFrame(loop);
+  }
+
+  function endGame(reason){
+    if(!game?.running) return;
+    game.running = false;
+    saveResult("Arteria Rush", playerObj.points, 60-playerObj.time, reason);
+    leftBody.innerHTML = `
+      <div class="note">
+        <b>Fin de partida</b> · ${reason}<br><br>
+        <b>Puntuación:</b> ${playerObj.points} · <b>Tiempo jugado:</b> ${60-playerObj.time}s · <b>Vidas restantes:</b> ${playerObj.lives}<br><br>
+        <button class="btn" id="again">Jugar otra vez</button>
+        <button class="btn" id="back">Volver al Hub</button>
+      </div>
+    `;
+    $("#again").onclick = ()=>startArteriaRush();
+    $("#back").onclick = ()=>renderHub();
+  }
+
+  game = {name:"Arteria Rush", running:true, stop: ()=>{game.running=false;}};
+  requestAnimationFrame(loop);
+}
+
+function startCicloSprint(){
+  setTab("tabArcade");
+  viewTitle.textContent = "Ciclo Cardíaco Sprint: ordena fases y toma decisiones";
+  leftBody.innerHTML = `
+    <div class="note">
+      🎯 <b>Objetivo:</b> completar 6 rondas. En cada una te aparece una situación del ciclo cardíaco.
+      Debes elegir la opción correcta (sístole/diástole, válvulas abiertas/cerradas, etc.).<br><br>
+      <button class="btn" id="startRound">Empezar</button>
+      <button class="btn" id="back">Volver al Hub</button>
+    </div>
+    <div class="sep"></div>
+    <div class="stage" style="padding:16px">
+      <div class="pill"><b>Ronda:</b> <span id="rRound">0</span>/6</div>
+      <div class="pill"><b>Puntos:</b> <span id="rPoints">0</span></div>
+      <div class="sep"></div>
+      <h3 id="rQuestion" style="margin:0 0 10px 0;font-size:16px"></h3>
+      <div id="rOptions" class="tiles" style="grid-template-columns:1fr 1fr"></div>
+      <div class="sep"></div>
+      <div class="note" id="rExplain">Pulsa “Empezar”.</div>
+    </div>
+  `;
+
+  const rounds = [
+    { q:"Los ventrículos se están llenando. ¿En qué fase estamos?",
+      a:["Diástole ventricular","Sístole ventricular","Sístole auricular","“No existe”"],
+      c:0, exp:"Diástole ventricular = relajación y llenado de los ventrículos." },
+    { q:"Los ventrículos se contraen y la sangre sale hacia aorta y arteria pulmonar. ¿Qué pasa con las válvulas?",
+      a:["Las auriculoventriculares se abren para que vuelva sangre","Se cierran las auriculoventriculares y se abren las semilunares","Todas cerradas","Todas abiertas"],
+      c:1, exp:"En sístole ventricular: AV (mitral/tricúspide) cerradas; semilunares (aórtica/pulmonar) abiertas." },
+    { q:"¿Qué cavidad tiene más grosor de pared y por qué?",
+      a:["Aurícula derecha, porque recibe sangre del cuerpo","Ventrículo izquierdo, porque bombea a todo el cuerpo (alta presión)","Aurícula izquierda, porque tiene más válvulas","Ventrículo derecho, porque va al cerebro"],
+      c:1, exp:"El ventrículo izquierdo impulsa a la circulación mayor: necesita más fuerza → pared más gruesa." },
+    { q:"En la circulación pulmonar, ¿qué sangre va por la arteria pulmonar?",
+      a:["Muy oxigenada","Poco oxigenada (cargada de CO₂)","Solo plasma","Solo glóbulos rojos"],
+      c:1, exp:"Excepción importante: la arteria pulmonar sale del corazón, pero lleva sangre poco oxigenada hacia pulmones." },
+    { q:"Si una persona tiene hipertensión crónica, ¿qué efecto es esperable en el corazón?",
+      a:["Menos trabajo para el corazón","Hipertrofia (engrosamiento) por mayor resistencia","El corazón se hace más pequeño","El corazón deja de necesitar oxígeno"],
+      c:1, exp:"Más presión = más resistencia a vencer: el corazón se adapta aumentando masa muscular (hipertrofia)." },
+    { q:"¿Qué acción ayuda más a bajar riesgo cardiovascular en un adolescente?",
+      a:["Dormir 4 horas y entrenar 2","Actividad física regular + sueño suficiente","Bebidas energéticas antes de entrenar","Fumar “solo fines de semana”"],
+      c:1, exp:"Moverse y dormir bien ayudan a regular presión, estrés y metabolismo." }
+  ];
+
+  let idx=0, points=0;
+  $("#rRound").textContent="0"; $("#rPoints").textContent="0";
+
+  function renderRound(){
+    const r = rounds[idx];
+    $("#rRound").textContent = String(idx+1);
+    $("#rQuestion").textContent = r.q;
+    $("#rExplain").textContent = "Elige una opción.";
+    const box = $("#rOptions"); box.innerHTML = "";
+    r.a.forEach((opt, j)=>{
+      const div = document.createElement("div");
+      div.className = "tile";
+      div.innerHTML = `<h3>${opt}</h3><p class="muted">Haz clic para responder.</p>`;
+      div.onclick = ()=>{
+        const ok = (j===r.c);
+        div.style.borderColor = ok ? "rgba(101,255,138,.55)" : "rgba(255,91,107,.55)";
+        div.style.background = ok ? "rgba(101,255,138,.10)" : "rgba(255,91,107,.10)";
+        points += ok ? 150 : 0;
+        $("#rPoints").textContent = String(points);
+        $("#rExplain").textContent = (ok ? "✅ Correcto. " : "❌ Incorrecto. ") + r.exp;
+        [...box.children].forEach(child=>child.style.pointerEvents="none");
+        setTimeout(()=>{
+          idx += 1;
+          if(idx>=rounds.length) endCiclo();
+          else renderRound();
+        }, 1100);
+      };
+      box.appendChild(div);
+    });
+  }
+
+  function endCiclo(){
+    saveResult("Ciclo Cardíaco Sprint", points, rounds.length, "Partida completada");
+    leftBody.innerHTML = `
+      <div class="note">
+        <b>¡Sprint completado!</b><br><br>
+        <b>Puntuación:</b> ${points}<br>
+        <b>Rondas:</b> ${rounds.length}/6<br><br>
+        <button class="btn" id="again">Repetir</button>
+        <button class="btn" id="back2">Volver al Hub</button>
+      </div>
+    `;
+    $("#again").onclick = ()=>startCicloSprint();
+    $("#back2").onclick = ()=>renderHub();
+  }
+
+  $("#startRound").onclick = ()=>{
+    idx=0; points=0; $("#rPoints").textContent="0";
+    renderRound();
+  };
+  $("#back").onclick = ()=>renderHub();
+  game = {name:"Ciclo Cardíaco Sprint", running:false, stop: ()=>{}};
+}
+
+function startRiesgoExpres(){
+  setTab("tabArcade");
+  viewTitle.textContent = "Riesgo Exprés: hipertensión y estilo de vida (simulador)";
+  leftBody.innerHTML = `
+    <div class="note">
+      🎯 <b>Objetivo:</b> ajusta hábitos (como si fueras tu “yo de 16 años”) y observa cómo cambia el riesgo.
+      Esto NO es un diagnóstico médico: es una simulación educativa.
+    </div>
+    <div class="sep"></div>
+    <div class="stage" style="padding:16px">
+      <div class="tiles" style="grid-template-columns:1fr 1fr">
+        ${makeSelect("Pasos/día (aprox.)","pasos",["2000","5000","8000","11000","14000"])}
+        ${makeSelect("Horas de sueño","sueño",["5","6","7","8","9"])}
+        ${makeSelect("Consumo de sal","sal",["baja","media","alta"])}
+        ${makeSelect("Ultraprocesados/semana","ultraprocesados",["bajo","medio","alto"])}
+        ${makeSelect("Tabaco/vapeo","tabaco",["no","a veces","sí"])}
+        ${makeSelect("Estrés percibido","estrés",["bajo","medio","alto"])}
+      </div>
+      <div class="sep"></div>
+      <div class="tiles" style="grid-template-columns:1fr 1fr">
+        ${makeSelect("Deporte/semana (sesiones)","deporte",["0","1","2","3","4","5"])}
+        <div class="tile" style="cursor:default">
+          <h3>Resultado</h3>
+          <p class="muted" id="riskText"></p>
+          <div class="tags" id="riskTags"></div>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="note" id="riskExplain"></div>
+      <div class="sep"></div>
+      <button class="btn" id="saveRisk">Guardar resultado</button>
+      <button class="btn" id="backRisk">Volver al Hub</button>
+    </div>
+  `;
+
+  function makeSelect(label,key,options){
+    const opts = options.map(o=>`<option value="${o}">${o}</option>`).join("");
+    return `
+      <div class="tile" style="cursor:default">
+        <h3>${label}</h3>
+        <p class="muted">Elige una opción realista.</p>
+        <select id="sel_${key}" class="btn" style="width:100%;text-align:left">${opts}</select>
+      </div>
+    `;
+  }
+
+  function setDefaults(){
+    $("#sel_pasos").value = "5000";
+    $("#sel_sueño").value = "7";
+    $("#sel_sal").value = "media";
+    $("#sel_ultraprocesados").value = "medio";
+    $("#sel_tabaco").value = "no";
+    $("#sel_estrés").value = "medio";
+    $("#sel_deporte").value = "2";
+  }
+  setDefaults();
+
+  function compute(){
+    const pasos = Number($("#sel_pasos").value);
+    const sueño = Number($("#sel_sueño").value);
+    const sal = $("#sel_sal").value;
+    const ultra = $("#sel_ultraprocesados").value;
+    const tabaco = $("#sel_tabaco").value;
+    const estrés = $("#sel_estrés").value;
+    const deporte = Number($("#sel_deporte").value);
+
+    let score = 50;
+    score += (sal==="alta") ? 12 : (sal==="media") ? 5 : -3;
+    score += (ultra==="alto") ? 10 : (ultra==="medio") ? 4 : -3;
+    score += (tabaco==="sí") ? 20 : (tabaco==="a veces") ? 10 : -2;
+    score += (estrés==="alto") ? 8 : (estrés==="medio") ? 3 : -2;
+    score += (sueño<=6) ? 6 : (sueño>=8) ? -3 : 0;
+    score += (pasos<5000) ? 10 : (pasos<8000) ? 4 : (pasos<11000) ? -2 : -5;
+    score += (deporte===0) ? 8 : (deporte<=2) ? 3 : -3;
+
+    score = clamp(Math.round(score), 0, 100);
+
+    const syst = Math.round(110 + (score-50)*0.55);
+    const dias = Math.round(70 + (score-50)*0.35);
+    const map = Math.round(dias + (syst - dias)/3);
+
+    let level="Bajo";
+    if(score>=70) level="Alto";
+    else if(score>=55) level="Medio";
+
+    $("#riskText").innerHTML = `
+      <b>Índice de riesgo (educativo):</b> ${score}/100 · <b>Nivel:</b> ${level}<br>
+      <b>Presión arterial simulada:</b> ${syst}/${dias} mmHg · <b>PAM</b> ≈ ${map} mmHg
+    `;
+
+    const tags = $("#riskTags");
+    tags.innerHTML = "";
+    const t1 = document.createElement("span");
+    t1.className = "tag " + (level==="Bajo" ? "good" : level==="Medio" ? "warn" : "hot");
+    t1.textContent = "Riesgo " + level;
+    tags.appendChild(t1);
+
+    const t2 = document.createElement("span");
+    t2.className = "tag";
+    t2.textContent = "PAM = Pd + (Ps−Pd)/3";
+    tags.appendChild(t2);
+
+    $("#riskExplain").innerHTML =
+      `💬 <b>¿Qué es la PAM?</b> La <b>Presión Arterial Media (PAM)</b> aproxima la presión “promedio” que empuja la sangre en las arterias.
+      Se usa para entender el <b>riego</b> de órganos. Fórmula aproximada: <b>PAM = Pd + (Ps−Pd)/3</b>.<br><br>
+      ✅ Si subes <b>actividad física</b>, mejoras <b>sueño</b> y reduces <b>sal/ultraprocesados</b>, suele bajar el índice.
+      (Ejemplo murciano: cambiar “bollería + refresco” por tostada con aceite de oliva + fruta, y moverte por las tardes).`;
+
+    return {score, level};
+  }
+
+  ["pasos","sueño","sal","ultraprocesados","tabaco","estrés","deporte"].forEach(k=>{
+    $("#sel_"+k).addEventListener("change", compute);
+  });
+  compute();
+
+  $("#saveRisk").onclick = ()=>{
+    const r = compute();
+    const pts = 120 + (r.level==="Bajo" ? 240 : r.level==="Medio" ? 160 : 80);
+    saveResult("Riesgo Exprés", pts, 1, "Simulación guardada: " + r.level);
+    $("#riskExplain").innerHTML += `<br><br>💾 <b>Guardado</b>. (Puntos: ${pts})`;
+  };
+  $("#backRisk").onclick = ()=>renderHub();
+  game = {name:"Riesgo Exprés", running:false, stop: ()=>{}};
+}
+
+function heartSVG(){
+  return `
+  <svg viewBox="0 0 520 380" width="100%" height="auto" role="img" aria-label="Diagrama simplificado del corazón">
+    <defs>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="rgba(0,0,0,.35)"/>
+      </filter>
+    </defs>
+
+    <path d="M260 340
+             C160 320 95 260 95 190
+             C95 120 150 85 200 95
+             C225 100 245 120 260 138
+             C275 120 295 100 320 95
+             C370 85 425 120 425 190
+             C425 260 360 320 260 340Z"
+          fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.12)" stroke-width="2" filter="url(#soft)"/>
+
+    <path id="h_ra" d="M170 145 C140 150 135 190 155 210 C175 230 220 220 230 190 C240 160 205 140 170 145Z"
+          fill="rgba(94,242,210,.28)" stroke="rgba(94,242,210,.35)" stroke-width="2"/>
+    <path id="h_rv" d="M175 215 C145 240 150 295 205 310 C240 320 265 295 260 260 C255 225 205 200 175 215Z"
+          fill="rgba(94,242,210,.22)" stroke="rgba(94,242,210,.33)" stroke-width="2"/>
+
+    <path id="h_la" d="M350 145 C315 140 280 160 290 190 C300 220 345 230 365 210 C385 190 380 150 350 145Z"
+          fill="rgba(255,79,216,.24)" stroke="rgba(255,79,216,.35)" stroke-width="2"/>
+    <path id="h_lv" d="M345 215 C315 200 265 225 260 260 C255 295 280 320 315 312 C370 300 380 240 345 215Z"
+          fill="rgba(255,79,216,.20)" stroke="rgba(255,79,216,.33)" stroke-width="2"/>
+
+    <circle id="h_tv" cx="250" cy="205" r="12" fill="rgba(94,242,210,.35)" stroke="rgba(255,255,255,.18)"/>
+    <circle id="h_mv" cx="270" cy="205" r="12" fill="rgba(255,79,216,.32)" stroke="rgba(255,255,255,.18)"/>
+
+    <path id="h_ao" d="M300 85 C310 40 365 35 375 75 C382 105 355 125 332 110"
+          fill="none" stroke="rgba(255,207,90,.65)" stroke-width="10" stroke-linecap="round"/>
+    <path id="h_pa" d="M220 92 C210 55 160 50 150 80 C142 105 165 125 190 112"
+          fill="none" stroke="rgba(101,255,138,.55)" stroke-width="10" stroke-linecap="round"/>
+
+    <text x="160" y="138" fill="rgba(233,236,255,.85)" font-size="12" font-weight="800">AD</text>
+    <text x="182" y="302" fill="rgba(233,236,255,.85)" font-size="12" font-weight="800">VD</text>
+    <text x="356" y="138" fill="rgba(233,236,255,.85)" font-size="12" font-weight="800">AI</text>
+    <text x="328" y="302" fill="rgba(233,236,255,.85)" font-size="12" font-weight="800">VI</text>
+    <text x="386" y="85" fill="rgba(233,236,255,.85)" font-size="12" font-weight="800">Aorta</text>
+    <text x="110" y="85" fill="rgba(233,236,255,.85)" font-size="12" font-weight="800">Art. pulmonar</text>
+  </svg>`;
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function startMapaCorazon(){
+  setTab("tabArcade");
+  viewTitle.textContent = "Mapa del corazón: partes y circulación";
+  leftBody.innerHTML = `
+    <div class="note">
+      🎯 <b>Objetivo:</b> identifica 8 partes del corazón. Cuando aciertes, se ilumina y aparece una mini-explicación.
+      (Ideal para repasar antes de examen).
+    </div>
+    <div class="sep"></div>
+    <div class="stage" style="padding:16px">
+      <div class="tiles" style="grid-template-columns:1.1fr .9fr">
+        <div class="tile" style="cursor:default">
+          ${heartSVG()}
+          <p class="small">Pulsa en una zona del corazón. Luego elige la etiqueta correcta.</p>
+        </div>
+        <div class="tile" style="cursor:default">
+          <h3>Panel de reto</h3>
+          <p class="muted" id="heartPrompt">Pulsa una zona para empezar.</p>
+          <div class="sep"></div>
+          <div id="heartChoices" class="answers"></div>
+          <div class="sep"></div>
+          <div class="note" id="heartExplain">Pista: aurículas arriba, ventrículos abajo.</div>
+          <div class="sep"></div>
+          <div class="pill"><b>Aciertos:</b> <span id="heartOk">0</span>/8</div>
+          <div class="pill"><b>Puntos:</b> <span id="heartPts">0</span></div>
+          <div class="sep"></div>
+          <button class="btn" id="backHeart">Volver al Hub</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const hotspots = [
+    {id:"ra", name:"Aurícula derecha", exp:"Recibe sangre pobre en O₂ desde las venas cavas.", done:false},
+    {id:"rv", name:"Ventrículo derecho", exp:"Envía sangre a los pulmones por la arteria pulmonar.", done:false},
+    {id:"la", name:"Aurícula izquierda", exp:"Recibe sangre rica en O₂ desde las venas pulmonares.", done:false},
+    {id:"lv", name:"Ventrículo izquierdo", exp:"Envía sangre a todo el cuerpo por la aorta.", done:false},
+    {id:"ao", name:"Aorta", exp:"Arteria principal de la circulación mayor (sistémica).", done:false},
+    {id:"pa", name:"Arteria pulmonar", exp:"Sale del ventrículo derecho hacia los pulmones (sangre poco oxigenada).", done:false},
+    {id:"mv", name:"Válvula mitral", exp:"Entre aurícula izquierda y ventrículo izquierdo.", done:false},
+    {id:"tv", name:"Válvula tricúspide", exp:"Entre aurícula derecha y ventrículo derecho.", done:false},
+  ];
+
+  let current=null, ok=0, pts=0;
+  const update=()=>{ $("#heartOk").textContent=ok; $("#heartPts").textContent=pts; };
+  update();
+
+  function pickHotspot(id){
+    current = hotspots.find(h=>h.id===id);
+    if(!current) return;
+    $("#heartPrompt").innerHTML = `<b>Zona seleccionada:</b> ${id.toUpperCase()} · ¿Qué es?`;
+    $("#heartExplain").textContent = "Elige la etiqueta correcta.";
+    renderChoices();
+  }
+
+  function renderChoices(){
+    const box = $("#heartChoices"); box.innerHTML = "";
+    const pool = shuffle([...hotspots.map(h=>h.name)]).slice(0,3);
+    if(current && !pool.includes(current.name)) pool[0]=current.name;
+    const choices = shuffle(pool);
+
+    choices.forEach(name=>{
+      const b=document.createElement("button");
+      b.className="ans";
+      b.textContent=name;
+      b.onclick=()=>{
+        if(!current) return;
+        const correct = (name===current.name);
+        b.classList.add(correct ? "good" : "bad");
+        [...box.children].forEach(btn=>{
+          if(btn.textContent===current.name) btn.classList.add("good");
+          btn.style.pointerEvents="none";
+        });
+
+        if(correct && !current.done){
+          current.done=true;
+          ok+=1; pts+=140;
+          const el=document.getElementById("h_"+current.id);
+          if(el){ el.style.filter="drop-shadow(0 0 10px rgba(101,255,138,.6))"; el.style.opacity=1; }
+          $("#heartExplain").textContent = "✅ " + current.exp;
+        }else if(correct && current.done){
+          $("#heartExplain").textContent = "✅ Ya la tenías. " + current.exp;
+        }else{
+          pts=Math.max(0, pts-20);
+          $("#heartExplain").textContent = "❌ No. " + current.exp;
+        }
+        update();
+        if(ok>=8){
+          saveResult("Mapa del corazón", pts, 1, "Reto completado");
+          $("#heartExplain").innerHTML += "<br><br>🏁 <b>¡Mapa completado!</b>";
+        }
+      };
+      box.appendChild(b);
+    });
+  }
+
+  ["ra","rv","la","lv","ao","pa","mv","tv"].forEach(id=>{
+    const el = document.getElementById("h_"+id);
+    el.style.cursor="pointer";
+    el.style.opacity=.85;
+    el.addEventListener("click", ()=>pickHotspot(id));
+  });
+
+  $("#backHeart").onclick = ()=>renderHub();
+  game = {name:"Mapa del corazón", running:false, stop: ()=>{}};
+}
+
+function hubTile(title, desc, tags, go){
+  const tagHTML = tags.map((t,i)=>{
+    const cls = i===0 ? "good" : i===1 ? "warn" : "hot";
+    return `<span class="tag ${cls}">${t}</span>`;
+  }).join("");
+  return `
+    <div class="tile" data-go="${go}" role="button" tabindex="0" aria-label="${title}">
+      <h3>${title}</h3>
+      <p>${desc}</p>
+      <div class="tags">${tagHTML}</div>
+    </div>
+  `;
+}
+
+function renderHub(){
+  if(game?.running) game.stop?.();
+  setTab("tabArcade");
+  viewTitle.textContent = "Hub Arcade: elige un reto";
+  leftBody.innerHTML = `
+    <div class="tiles">
+      ${hubTile("🧬 Arteria Rush","Desobstruye arterias. Para romper un “coágulo”, contesta preguntas sobre placas, corazón y hábitos.",
+        ["Acción + preguntas","Aterosclerosis","Riesgo CV"],"arteria")}
+      ${hubTile("⚡ Ciclo Cardíaco Sprint","Rondas rápidas: sístole/diástole, válvulas y circulación. Ideal para repaso antes de examen.",
+        ["Rápido","Ciclo cardíaco","Válvulas"],"ciclo")}
+      ${hubTile("📊 Riesgo Exprés","Simulador educativo: cómo pasos, sueño, sal, tabaco y estrés influyen en presión arterial y riesgo.",
+        ["Hábitos","Hipertensión","PAM"],"riesgo")}
+      ${hubTile("🫀 Mapa del corazón","Pincha y etiqueta partes. Acierta y se ilumina. Incluye circulación pulmonar y mayor.",
+        ["Anatomía","Circulación","Coronarias"],"mapa")}
+    </div>
+    <div class="sep"></div>
+    <div class="note">
+      🏁 <b>Reto de clase (opcional):</b> “Liga Cardio” → cada equipo juega 2 minijuegos y luego explica
+      <b>una idea científica</b> aprendida (ej.: por qué la arteria pulmonar es una excepción).
+    </div>
+  `;
+  leftBody.querySelectorAll("[data-go]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const go = el.getAttribute("data-go");
+      if(go==="arteria") startArteriaRush();
+      if(go==="ciclo") startCicloSprint();
+      if(go==="riesgo") startRiesgoExpres();
+      if(go==="mapa") startMapaCorazon();
+    });
+  });
+}
+
+function renderLearn(){
+  if(game?.running) game.stop?.();
+  setTab("tabAprende");
+  viewTitle.textContent = "Aprende: mini-guía clara (y con palabras científicas)";
+  leftBody.innerHTML = `
+    <div class="learn">
+      <div class="callout">
+        🧠 <b>Truco mental:</b> <b>Arterias</b> = “salen” del corazón. <b>Venas</b> = “vuelven”.
+        Pero recuerda la excepción: la <b>arteria pulmonar</b> lleva sangre poco oxigenada.
+      </div>
+      <div class="sep"></div>
+
+      <h3>1) Partes del corazón</h3>
+      <ul>
+        <li><b>Aurículas</b>: cámaras de arriba, reciben sangre.</li>
+        <li><b>Ventrículos</b>: cámaras de abajo, expulsan sangre.</li>
+        <li><b>Válvulas AV</b>: <b>tricúspide</b> (derecha) y <b>mitral</b> (izquierda).</li>
+        <li><b>Válvulas semilunares</b>: <b>pulmonar</b> y <b>aórtica</b>.</li>
+        <li><b>Coronarias</b>: riegan el miocardio.</li>
+      </ul>
+
+      <div class="sep"></div>
+      <h3>2) Tipos de circulación</h3>
+      <ul>
+        <li><b>Pulmonar</b>: VD → pulmones → AI.</li>
+        <li><b>Mayor</b>: VI → cuerpo → AD.</li>
+        <li><b>Coronaria</b>: aorta → coronarias → retorno a aurícula derecha.</li>
+      </ul>
+
+      <div class="sep"></div>
+      <h3>3) Ciclo cardíaco</h3>
+      <ul>
+        <li><b>Diástole</b>: relajación + llenado.</li>
+        <li><b>Sístole</b>: contracción + expulsión.</li>
+      </ul>
+
+      <div class="sep"></div>
+      <h3>4) Hipertensión y estilo de vida</h3>
+      <ul>
+        <li><b>HTA</b>: presión alta mantenida → daño vascular y más trabajo del corazón.</li>
+        <li><b>Modificables</b>: tabaco/vapeo, sedentarismo, sal, ultraprocesados, estrés, mal sueño.</li>
+      </ul>
+
+      <div class="sep"></div>
+      <div class="note">
+        🧾 <b>Salida rápida:</b> escribe 3 frases: (1) algo nuevo del ciclo, (2) una excepción arterias/venas, (3) un hábito a mejorar.
+      </div>
+
+      <div class="sep"></div>
+      <button class="btn" id="goArcade">Volver a Arcade</button>
+    </div>
+  `;
+  $("#goArcade").onclick = ()=>renderHub();
+}
+
+function renderTeacher(){
+  if(game?.running) game.stop?.();
+  setTab("tabProfe");
+  viewTitle.textContent = "Modo profe: resultados, exportación y edición rápida";
+  const best = player.best || {};
+  leftBody.innerHTML = `
+    <div class="note">
+      👩‍🏫 <b>Modo profe</b>: exporta resultados. Se guarda en este navegador (localStorage).
+      <br><br><b>Pista:</b> el alumnado puede ponerse un alias en Ajustes.
+    </div>
+    <div class="sep"></div>
+
+    <div class="tiles" style="grid-template-columns:1fr 1fr">
+      <div class="tile" style="cursor:default">
+        <h3>Mejores marcas</h3>
+        <p class="muted">Por juego (puntos máximos).</p>
+        <div class="sep"></div>
+        ${Object.keys(best).length ?
+          `<ul class="muted" style="margin:0 0 0 18px;line-height:1.6">
+            ${Object.entries(best).map(([k,v])=>`<li><b style="color:var(--text)">${k}</b>: ${v} pts</li>`).join("")}
+          </ul>` :
+          `<p class="muted">Aún no hay marcas.</p>`
+        }
+      </div>
+
+      <div class="tile" style="cursor:default">
+        <h3>Exportar (JSON / CSV)</h3>
+        <p class="muted">Copia y pega en un documento u hoja de cálculo.</p>
+        <div class="sep"></div>
+        <button class="btn" id="btnJSON">Generar JSON</button>
+        <button class="btn" id="btnCSV">Generar CSV</button>
+        <button class="btn" id="btnReset">Borrar datos</button>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="tile" style="cursor:default">
+      <h3>Datos</h3>
+      <p class="muted">Salida lista para copiar.</p>
+      <textarea id="exportBox" spellcheck="false"></textarea>
+    </div>
+
+    <div class="sep"></div>
+    <div class="note">
+      🧩 <b>Personalización:</b> edita el banco de preguntas dentro del archivo (busca <span class="kbd">QUESTION_BANK</span>).
+    </div>
+
+    <div class="sep"></div>
+    <button class="btn" id="backProfe">Volver al Hub</button>
+  `;
+
+  $("#btnJSON").onclick = ()=>{
+    $("#exportBox").value = JSON.stringify({
+      player: player.name, totalPoints: player.totalPoints, best: player.best, log: player.log
+    }, null, 2);
+  };
+
+  $("#btnCSV").onclick = ()=>{
+    const rows = [["fecha","jugador","juego","puntos","duracion","motivo"]];
+    (player.log||[]).forEach(r=>rows.push([r.date,r.player,r.game,r.points,r.duration,r.note]));
+    $("#exportBox").value = rows.map(row=>row.map(x=>{
+      const s=String(x??"");
+      return (s.includes(",")||s.includes("\n")) ? `"${s.replaceAll('"','""')}"` : s;
+    }).join(",")).join("\n");
+  };
+
+  $("#btnReset").onclick = ()=>{
+    if(confirm("¿Borrar todos los datos guardados en este navegador?")){
+      localStorage.removeItem("cardioarcade.totalPoints");
+      localStorage.removeItem("cardioarcade.best");
+      localStorage.removeItem("cardioarcade.log");
+      player.totalPoints=0; player.best={}; player.log=[];
+      $("#exportBox").value="";
+      renderTeacher();
+    }
+  };
+
+  $("#backProfe").onclick = ()=>renderHub();
+}
+
+function renderSettings(){
+  if(game?.running) game.stop?.();
+  setTab("tabAjustes");
+  viewTitle.textContent = "Ajustes: nombre, accesibilidad y sonido";
+  leftBody.innerHTML = `
+    <div class="tiles" style="grid-template-columns:1fr 1fr">
+      <div class="tile" style="cursor:default">
+        <h3>Nombre / alias</h3>
+        <p class="muted">Para registrar resultados por alumno/a.</p>
+        <div class="sep"></div>
+        <input id="nameInput" class="btn" style="width:100%;text-align:left" placeholder="Escribe tu nombre o alias" />
+        <div class="sep"></div>
+        <button class="btn" id="saveName">Guardar</button>
+      </div>
+
+      <div class="tile" style="cursor:default">
+        <h3>Accesibilidad</h3>
+        <p class="muted">Útil para dislexia: letra un poco más grande y más espacio.</p>
+        <div class="sep"></div>
+        <button class="btn" id="toggleDys">Modo lectura clara</button>
+        <button class="btn" id="toggleSound">Sonido: <span id="soundState">ON</span></button>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="note">
+      📱 <b>En móvil/tablet:</b> mejor proyectar y jugar por turnos, o usar teclado/mando Bluetooth.
+    </div>
+
+    <div class="sep"></div>
+    <button class="btn" id="backSettings">Volver al Hub</button>
+  `;
+
+  const nameInput=$("#nameInput");
+  nameInput.value=player.name;
+
+  $("#saveName").onclick = ()=>{
+    const name=nameInput.value.trim() || "Anónimo";
+    player.name=name;
+    localStorage.setItem("cardioarcade.name", name);
+    $("#playerNameValue").textContent=name;
+    alert("Nombre guardado.");
+  };
+
+  $("#toggleDys").onclick = ()=>{ document.body.classList.toggle("dyslexia"); };
+
+  $("#soundState").textContent = (localStorage.getItem("cardioarcade.sound") ?? "on").toUpperCase();
+  $("#toggleSound").onclick = ()=>{
+    const cur=(localStorage.getItem("cardioarcade.sound") ?? "on");
+    const next=(cur==="on") ? "off" : "on";
+    localStorage.setItem("cardioarcade.sound", next);
+    $("#soundState").textContent = next.toUpperCase();
+    beep(next==="on" ? 740 : 240, 0.08);
+  };
+
+  $("#backSettings").onclick = ()=>renderHub();
+}
+
+function saveResult(gameName, points, duration, note){
+  player.totalPoints = (player.totalPoints||0) + (points||0);
+  localStorage.setItem("cardioarcade.totalPoints", String(player.totalPoints));
+
+  const best = player.best || {};
+  best[gameName] = Math.max(best[gameName]||0, points||0);
+  player.best = best;
+  localStorage.setItem("cardioarcade.best", JSON.stringify(best));
+
+  const log = player.log || [];
+  const date = new Date().toISOString();
+  log.push({date, player: player.name, game: gameName, points, duration, note});
+  player.log = log;
+  localStorage.setItem("cardioarcade.log", JSON.stringify(log));
+
+  beep(660, .07);
+}
+
+let audioCtx=null;
+function beep(freq=660, dur=0.06){
+  const sound=(localStorage.getItem("cardioarcade.sound") ?? "on");
+  if(sound!=="on") return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type="square";
+    o.frequency.value=freq;
+    g.gain.value=0.05;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    setTimeout(()=>{o.stop();}, dur*1000);
+  }catch(e){}
+}
+
+renderHub();
+</script>
+</body>
+</html>
